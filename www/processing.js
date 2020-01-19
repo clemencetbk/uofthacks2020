@@ -17,7 +17,7 @@ function getDigitalCloseness(msg_json) {
         }
         if (curr_date != prev_date) {
             let score = 1 - Math.min(1, msg_count / msg_per_day);
-            points.push((prev_date, score));
+            points.push([prev_date, score]);
             msg_count = 0;
             prev_date = curr_date;
         }
