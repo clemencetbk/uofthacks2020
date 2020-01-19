@@ -1,7 +1,21 @@
 const msg_per_day = 10; // Arbitrary # of messages that close friends send per day
+const max_dist = 1000; // Arbitrary max # of kilometers for proximity to have a positive impact
+const ms_in_day = 1000 * 60 * 60 * 24;
 
 export default function getCloseness(msg_json, loc_json1, loc_json2) {
-    return getDigitalCloseness(msg_json);
+    let points = getDigitalCloseness(msg_json);
+/*     let physical_pts = getPhysicalCloseness(loc_json1, loc_json2);
+    let j = 0; // index for physical_pts
+    for (var i = 0; i < points.length; i++) {
+        while (j < physical_pts.length && physical_pts[j][0] < points[i][0]) {
+            j++;
+        }
+        while (i < points.length && points[i][0] < physical_pts[j][0]) {
+            i++;
+        }
+        points[i][1] = points[i][1] * physical_pts[j][1] / max_dist;
+    } */
+    return points;
 }
 
 function getDigitalCloseness(msg_json) {
@@ -11,13 +25,13 @@ function getDigitalCloseness(msg_json) {
     let msg_count = 0;
     for (var i = messages.length - 1; i >= 0; i--) {
         let message = messages[i];
-        let curr_date = Math.floor(message.timestamp_ms / (1000 * 60 * 60 * 24));
+        let curr_date = ms_to_days(message.timestamp_ms);
         if (i == messages.length - 1) {
             prev_date = curr_date;
         }
         if (curr_date != prev_date) {
-            while (prev_date + 1 != curr_date) { // Missing some days in between
-                prev_date++;
+            while (prev_date + ms_in_day != curr_date) { // Missing some days in between
+                prev_date += ms_in_day;
                 points.push([prev_date, 1]);
             }
             let score = 1 - Math.min(1, msg_count / msg_per_day);
@@ -53,12 +67,16 @@ function getPhysicalCloseness(loc_json1, loc_json2) {
         // Sample location for curr day
         let distance = getDistance(loc1["latitudeE7"], loc1["longitudeE7"], 
                                    loc2["latitudeE7"], loc2["longituteE7"]);
-        points.push([curr_date1, distance]);
+        if (distance < max_dist) {
+            points.push([curr_date1, distance]);
+        } else {
+            points.push([curr_date1, max_dist]);
+        }
         // Iterate until finding new day
-        while (curr_date1 == prev_date) {
-            i++;
+        while (curr_date1 == prev_date && i < locations1.length) {
             loc1 = locations1[i];
             curr_date1 = ms_to_days(loc1["timestampMs"]);
+            i++;
         }
         prev_date = curr_date1
     }
@@ -66,8 +84,7 @@ function getPhysicalCloseness(loc_json1, loc_json2) {
 }
 
 function ms_to_days(millis) {
-    return Math.floor(millis.timestamp_ms / (1000 * 60 * 60 * 24));
-
+    return Math.floor(millis / (ms_in_day)) * ms_in_day;
 }
 
 // https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
