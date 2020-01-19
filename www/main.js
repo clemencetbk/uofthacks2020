@@ -5,7 +5,7 @@ window.addEventListener('load', () => {
   window.addEventListener('drop', (event) => event.preventDefault());
 
   const dropTarget = document.getElementById('drop');
-  attachDropListener(dropTarget, (messages, locationHistory) => {
-    console.log(messages, locationHistory)
+  attachDropListener(dropTarget, (messages, locationHistory1, locationHistory2) => {
+    console.log(messages, locationHistory1, locationHistory2)
   });
 });

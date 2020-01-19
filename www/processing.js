@@ -9,7 +9,7 @@ function getDigitalCloseness(msg_json) {
     let messages = msg_json["messages"];
     let prev_date = 0;
     let msg_count = 0;
-    for (var i = 0; i < messages.length; i++) {
+    for (var i = messages.length - 1; i >= 0; i--) {
         let message = messages[i];
         let curr_date = Math.floor(message.timestamp_ms / (1000 * 60 * 60 * 24));
         if (i == 0) {
