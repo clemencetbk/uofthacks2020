@@ -8,7 +8,19 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <file-drop id="drop" multiple accept="application/json">
+    Drag and drop data here
+    <ul>
+      <li>
+        Facebook Messenger Chat (<code>message_1.json</code>)
+      </li>
+      <li>
+        Google Location History (<code>Location History.json</code>)
+      </li>
+    </ul>
+  </file-drop>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
-  <script src="main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-drop-element@0.2.0/dist/filedrop.umd.min.js"></script>
+  <script src="main.js" type="module"></script>
 </body>
 </html>
