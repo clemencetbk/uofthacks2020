@@ -30,12 +30,40 @@ function getPhysicalCloseness(loc_json1, loc_json2) {
     let points = [];
     let locations1 = loc_json1["locations"];
     let locations2 = loc_json2["locations"];
-    // Sample location for all days available
-    // Get distance between points
-    // Return array of (days, distance)
+    let i2 = 0; // curr index in locations2
+    let prev_date = 0;
+    for (var i = 0; i < locations1.length; i++) {
+        let loc1 = locations1[i];
+        let loc2 = locations2[i2];
+        let curr_date1 = ms_to_days(loc1["timestampMs"]);
+        if (i == 0) {
+            prev_date = curr_date1;
+        }
+        let curr_date2 = ms_to_days(loc2["timestampMs"]);
+        while (curr_date2 != curr_date1) { // Iterate through locations2 until dates match
+            i2++;
+            loc2 = locations2[i2];
+            curr_date2 = ms_to_days(loc2["timestampMs"]);
+        }
+        // Sample location for curr day
+        let distance = getDistance(loc1["latitudeE7"], loc1["longitudeE7"], 
+                                   loc2["latitudeE7"], loc2["longituteE7"]);
+        points.push([curr_date1, distance]);
+        // Iterate until finding new day
+        while (curr_date1 == prev_date) {
+            i++;
+            loc1 = locations1[i];
+            curr_date1 = ms_to_days(loc1["timestampMs"]);
+        }
+        prev_date = curr_date1
+    }
     return points;
 }
 
+function ms_to_days(millis) {
+    return Math.floor(millis.timestamp_ms / (1000 * 60 * 60 * 24));
+
+}
 
 // https://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
 function getDistance(lat1,lon1,lat2,lon2) {
