@@ -1,3 +1,4 @@
+import './polyfill/index.js';
 import attachDropListener from './drop.js';
 import getCloseness from './processing.js';
 import createChart from './chart.js';

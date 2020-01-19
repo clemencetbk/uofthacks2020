@@ -1,37 +1,66 @@
 export default function createChart(canvas, closenessOverTime) {
-  canvas.width = closenessOverTime.length * 10
   const datasetConfiguration = {
-    backgroundColor: 'rgba(255, 99, 132, 0.2)',
     borderColor: 'rgba(255, 99, 132, 1)',
-    borderWidth: 1,
+    borderWidth: 2,
     pointRadius: 0,
     fill: false,
-  }
+  };
+
+  const windowSize = 1000 * 60 * 60 * 24 * 31 * 12;
+  const slidingSpeed = 1000 * 60 * 60 * 24 * 31;
+  
   const chart = new Chart(canvas.getContext('2d'), {
     type: 'line',
     data: {
-      labels: closenessOverTime.map(([x]) => x),
       datasets: [{
-        label: 'Person 1',
-        data: closenessOverTime.map(([x, y]) => y),
+        data: closenessOverTime.map(([x, y]) => ({ x, y: y })),
         ...datasetConfiguration,
       }, {
-        label: 'Person 2',
-        data: closenessOverTime.map(([x, y]) => -y),
+        data: closenessOverTime.map(([x, y]) => ({ x, y: -y })),
         ...datasetConfiguration,
       }],
     },
     options: {
-      responsive: false,
+      responsive: true,
       animation: false,
+      legend: false,
       scales: {
-        yAxes: [{
+        xAxes: [{
+          type: 'time',
+          time: {
+            min: closenessOverTime[0][0],
+            max: closenessOverTime[0][0] + windowSize,
+            unit: 'month',
+            displayFormats: {
+              month: 'MMM YYYY',
+            },
+          },
           ticks: {
-            beginAtZero: true,
+            autoSkip: false,
+            source: 'auto',
+            major: {
+              enabled: true,
+            },
           },
         }],
       },
     },
   });
+
+  let prevPaint = Date.now();
+  setInterval(() => {
+    const now = Date.now();
+    const dt = (now - prevPaint) / 1000;
+    prevPaint = now;
+    
+    if (chart.options.scales.xAxes[0].time.max <= closenessOverTime[closenessOverTime.length - 1][0]) {
+      chart.options.scales.xAxes[0].time.min += slidingSpeed * dt;
+      chart.options.scales.xAxes[0].time.max += slidingSpeed * dt;
+    } else if (chart.options.scales.xAxes[0].time.min >= closenessOverTime[0][0]) {
+      chart.options.scales.xAxes[0].time.min -= slidingSpeed * dt;
+    }
+    chart.update();
+  }, 1000 / 60);
+
   return chart;
 }
