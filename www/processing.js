@@ -4,17 +4,17 @@ const ms_in_day = 1000 * 60 * 60 * 24;
 
 export default function getCloseness(msg_json, loc_json1, loc_json2) {
     let points = getDigitalCloseness(msg_json);
-/*     let physical_pts = getPhysicalCloseness(loc_json1, loc_json2);
+    let physical_pts = getPhysicalCloseness(loc_json1, loc_json2);
     let j = 0; // index for physical_pts
     for (var i = 0; i < points.length; i++) {
-        while (j < physical_pts.length && physical_pts[j][0] < points[i][0]) {
+        while (j < physical_pts.length - 1 && physical_pts[j][0] < points[i][0]) {
             j++;
         }
-        while (i < points.length && points[i][0] < physical_pts[j][0]) {
+        while (i < points.length - 1 && points[i][0] < physical_pts[j][0]) {
             i++;
         }
         points[i][1] = points[i][1] * physical_pts[j][1] / max_dist;
-    } */
+    }
     return points;
 }
 
@@ -54,7 +54,7 @@ function getPhysicalCloseness(loc_json1, loc_json2) {
         let loc1 = locations1[i];
         let loc2 = locations2[i2];
         let curr_date1 = ms_to_days(loc1["timestampMs"]);
-        if (i == 0) {8001
+        if (i == 0) {
             prev_date = curr_date1;
         }
         let curr_date2 = ms_to_days(loc2["timestampMs"]);
