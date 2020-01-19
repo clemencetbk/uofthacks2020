@@ -36,18 +36,19 @@ function getPhysicalCloseness(loc_json1, loc_json2) {
     let locations2 = loc_json2["locations"];
     let i2 = 0; // curr index in locations2
     let prev_date = 0;
-    for (var i = 0; i < locations1.length; i++) {
+    for (var i = 0; i < locations1.length && i2 < locations2.length; i++) {
         let loc1 = locations1[i];
         let loc2 = locations2[i2];
         let curr_date1 = ms_to_days(loc1["timestampMs"]);
-        if (i == 0) {
+        if (i == 0) {8001
             prev_date = curr_date1;
         }
         let curr_date2 = ms_to_days(loc2["timestampMs"]);
-        while (curr_date2 != curr_date1) { // Iterate through locations2 until dates match
-            i2++;
+        // Iterate through locations2 until dates match
+        while (curr_date2 != curr_date1 && i2 < locations2.length) {
             loc2 = locations2[i2];
             curr_date2 = ms_to_days(loc2["timestampMs"]);
+            i2++;
         }
         // Sample location for curr day
         let distance = getDistance(loc1["latitudeE7"], loc1["longitudeE7"], 
